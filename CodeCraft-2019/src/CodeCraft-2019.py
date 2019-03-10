@@ -26,9 +26,10 @@ def main():
     logging.info("answer_path is %s" % (answer_path))
 
     # to read input file
-    id_2_cars = create_object_from_file(car_path, 'Car')
-    id_2_roads = create_object_from_file(road_path, 'Road')
-    id_2_cross = create_object_from_file(cross_path, 'Cross')
+    global_exit_queue = {}
+    id_2_cars = create_object_from_file(car_path, 'Car', global_exit_queue)
+    id_2_roads = create_object_from_file(road_path, 'Road', global_exit_queue)
+    id_2_cross = create_object_from_file(cross_path, 'Cross', global_exit_queue)
 
     # 为所有的car设置source和destination
     for car_id, car in id_2_cars.items():
@@ -56,12 +57,13 @@ def main():
     # to write output file
 
 
-def create_object_from_file(path, class_name):
+def create_object_from_file(path, class_name, global_exit_queue):
     """
     从文件中读取数据并创建相应对象
 
     @param path: str 文件路径
     @param class_name: str 类名，取值Car、Cross、Road
+    @param global_exit_queue: dict 存储某tick所有从道路中出来的车辆
     @return: dict，id to 对象
     """
     id_2_objects = {}
@@ -70,6 +72,8 @@ def create_object_from_file(path, class_name):
         next(f)
         for line in f:
             args = [int(ch) for ch in line.strip("()\n").split(",")]
+            if class_name == 'Road':
+                args.append(global_exit_queue)
             id_2_objects[args[0]] = target_class(*args)
     return id_2_objects
 
