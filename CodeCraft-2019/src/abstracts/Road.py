@@ -49,20 +49,22 @@ class Road(object):
         @param direction: bool
         @param global_tick: int
         """
-        all_cars_will_enter = self.global_exit_queue[(self._id, direction)]
+        # 没有可进入的车辆
+        if (self, direction) not in self.global_exit_queue:
+            return
+        all_cars_will_enter = self.global_exit_queue[(self, direction)]
         entrance = self._source if direction else self._destination
         neighbors = entrance.get_road_list()
-        index_of_entrance = neighbors.index(entrance)
+        index_of_entrance = neighbors.index(self)
         straight_road = neighbors[(index_of_entrance + 2) % 4]
         left_road = neighbors[(index_of_entrance - 1) % 4]
         right_road = neighbors[(index_of_entrance + 1) % 4]
 
-        all_lanes_straight_cars = all_cars_will_enter[straight_road.get_id()]
-        self.enter_from_same_road(all_lanes_straight_cars, direction, global_tick)
-        all_lanes_left_cars = all_cars_will_enter[left_road.get_id()]
-        self.enter_from_same_road(all_lanes_left_cars, direction, global_tick)
-        all_lanes_right_cars = all_cars_will_enter[right_road.get_id()]
-        self.enter_from_same_road(all_lanes_right_cars, direction, global_tick)
+        for road in (straight_road, left_road, right_road):
+            if road is None or road not in all_cars_will_enter:
+                continue
+            all_lanes_straight_cars = all_cars_will_enter[road]
+            self.enter_from_same_road(all_lanes_straight_cars, direction, global_tick)
 
     def enter_from_same_road(self, all_lanes_cars, direction, global_tick):
         """
@@ -74,8 +76,8 @@ class Road(object):
         """
         channel_num = len(all_lanes_cars)
         channel_index = 0
-        while not all([lane.isEmpty() for lane in all_lanes_cars]):
-            if not all_lanes_cars[channel_index % channel_num].isEmpty():
+        while not all([lane.empty() for lane in all_lanes_cars]):
+            if not all_lanes_cars[channel_index % channel_num].empty():
                 car, next_dist = all_lanes_cars[channel_index % channel_num].get()
                 self.enter(car, next_dist, direction, global_tick)
             channel_index += 1
@@ -91,11 +93,12 @@ class Road(object):
         """
         assert 0 < position <= self._length
         lanes = self._lanes["positive"] if direction else self._lanes["negative"]
+        if all([l.is_full() for l in lanes]):
+            print("Car(%d)不能进入Road（%d）" % (car.get_id(), self._id))
         for lane in lanes:
             if not lane.is_full():
                 lane.enter(car, position, global_tick)
-        else:
-            raise Exception("Car(%d)无法进入Road(%d)" % (car.get_id(), self._id))
+                break
 
     def get_id(self):
         return self._id
@@ -129,3 +132,12 @@ class Road(object):
 
     def get_current_tick(self):
         return self._current_tick
+
+    def get_positive_lanes(self):
+        return self._lanes['positive']
+
+    def get_negative_lanes(self):
+        return self._lanes['negative']
+
+    def is_duplex(self):
+        return self._is_duplex == 1

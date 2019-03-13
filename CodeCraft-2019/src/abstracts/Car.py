@@ -18,9 +18,13 @@ class Car(object):
         self._current_tick = 0
         self._begin_tick = -1
         self._finish_tick = -1
+        self._is_arrived = False
 
-    def is_arriving(self):
-        return self._path.isEmpty()
+    def set_is_arrived(self):
+        self._is_arrived = True
+
+    def is_arrived(self):
+        return self._is_arrived
 
     def is_running(self):
         return self._current_road is not None
@@ -75,13 +79,19 @@ class Car(object):
     def set_current_tick(self, tick):
         self._current_tick = tick
 
+    def set_path(self, path):
+        self._path = path
+
     def get_next_road(self):
         """
         获取下一个road
 
         @return (Road，bool)，Road对象和方向
         """
-        return self._path[0]
+        if len(self._path) == 0:
+            return None, None
+
+        return self._path.pop(0)
 
     def switch_next_road(self):
         self._current_road, self._current_direction = self._path.pop(0)

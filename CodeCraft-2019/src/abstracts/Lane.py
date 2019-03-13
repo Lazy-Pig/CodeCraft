@@ -1,4 +1,4 @@
-from Queue import Queue
+from queue import Queue
 
 
 class LaneSlot(object):
@@ -25,7 +25,7 @@ class Lane(object):
         self._tail = None
 
     def is_full(self):
-        return self._tail.position == 1
+        return self._tail is not None and self._tail.position == 1
 
     def get_current_tick(self):
         return self._current_tick
@@ -49,13 +49,14 @@ class Lane(object):
             # 可能驶出本车道
             else:
                 current_dist = self._length - lane_slot_point.position
+                next_road, next_road_direction = lane_slot_point.car.get_next_road()
                 # 车辆到达终点
-                if lane_slot_point.car.is_arriving():
+                if next_road is None and next_road_direction is None:
                     lane_slot_point.car.set_current_tick(global_tick)
                     car = self.exit()
+                    car.set_is_arrived()
                     lane_slot_point = lane_slot_point.next
                     continue
-                next_road, next_road_direction = lane_slot_point.car.get_next_road()
                 next_v = min(next_road.get_speed(), lane_slot_point.car.get_speed())
                 # 下一时刻驶出本车道
                 if next_v - current_dist <= 0:
@@ -66,13 +67,13 @@ class Lane(object):
                 else:
                     next_dist = next_v - current_dist
                     car = self.exit()
-                    if (next_road.get_id(), next_road_direction) not in self.global_exit_queue:
+                    if (next_road, next_road_direction) not in self.global_exit_queue:
                         self.global_exit_queue[(next_road, next_road_direction)] = {}
                     target_dict = self.global_exit_queue[(next_road, next_road_direction)]
-                    if self.road.get_id() not in target_dict:
+                    if self.road not in target_dict:
                         channel_number = self.road.get_channel_number()
-                        target_dict[self.road.get_id()] = [Queue() for _ in range(channel_number)]
-                    target_queue = target_dict[self.road.get_id()][self._id]
+                        target_dict[self.road] = [Queue() for _ in range(channel_number)]
+                    target_queue = target_dict[self.road][self._id]
                     target_queue.put((car, next_dist))
             lane_slot_point = lane_slot_point.next
         self._current_tick = global_tick
@@ -89,7 +90,7 @@ class Lane(object):
         # 保证车道还有slot容纳新进入的车辆
         if self._tail is not None:
             assert self._tail.position > 1
-        position = min(position, self._tail.position - 1)
+        position = min(position, self._tail.position - 1) if self._tail is not None else min(position, self._length)
         slot = LaneSlot(car, position)
         car.set_current_position(position)
         car.set_current_tick(global_tick)
@@ -104,3 +105,6 @@ class Lane(object):
         car = self._head.car
         self._head = self._head.next
         return car
+
+    def get_head(self):
+        return self._head

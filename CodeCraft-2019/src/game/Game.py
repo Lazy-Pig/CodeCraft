@@ -1,25 +1,206 @@
 import pygame
 import sys
 from pygame.locals import *
+import time
 
-BACKGROUND_SIZE = (764, 764)
+BACKGROUND_SIZE = (842, 842)
 SLOT_SIZE = (38, 13)
+DIGIT_SIZE = (9, 13)
+
+START_POSITIONS = {
+    'up': {'positive': (406, 0), 'negative':(423, 342)},
+    'down': {'positive': (406, 462), 'negative': (423, 804)},
+    'left': {'positive': (0, 423), 'negative': (342, 406)},
+    'right': {'positive': (462, 423), 'negative': (804, 406)}
+}
+POSITIONS_DELTA = {
+    'herizontal': {
+        'positive': (38, 13),
+        'negative': (-38, -13)
+    },
+    'vertical': {
+        'positive': (-13, 38),
+        'negative': (13, -38)
+    }
+}
+DIGIT_DELTA = {
+    'herizontal': {
+        'positive': (9, 0),
+        'negative': (-9, 0)
+    },
+    'vertical': {
+        'positive': (0, 9),
+        'negative': (0, -9)
+    }
+}
 
 
 class Game(object):
     def __init__(self):
         pygame.init()
         self._clock = pygame.time.Clock()
-        self._screen = pygame.display.set_mode((764, 764))
+        self._screen = pygame.display.set_mode(BACKGROUND_SIZE)
         pygame.display.set_caption('Traffic')
 
-        # self._images = {
-        #     'background': pygame.image.load('images/big_background.png').convert(),
-        #     'slot': pygame.image.load('images/slot.png').convert(),
-        #     'v_slot': pygame.transform.rotate(pygame.image.load('images/slot.png').convert(), 90),
-        # }
+        self._images = {
+            'background': pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/cross.png').convert(),
+            'digits': {
+                'herizontal': {
+                    'positive': [
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/0.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/1.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/2.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/3.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/4.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/5.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/6.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/7.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/8.png').convert(),
+                    pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/9.png').convert(),
+                ],
+                    'negative': [
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/0.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/1.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/2.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/3.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/4.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/5.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/6.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/7.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/8.png').convert(),
+                        180),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/9.png').convert(),
+                        180),
+                ]
+                },
+                'vertical': {
+                    'positive': [
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/0.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/1.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/2.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/3.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/4.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/5.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/6.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/7.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/8.png').convert(),
+                        90),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/9.png').convert(),
+                        90),
+                ],
+                    'negative': [
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/0.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/1.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/2.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/3.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/4.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/5.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/6.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/7.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/8.png').convert(),
+                        270),
+                    pygame.transform.rotate(
+                        pygame.image.load('/home/judy/SDK/SDK_python/CodeCraft-2019/src/game/images/9.png').convert(),
+                        270),
+                ]
+                }
+            }
+        }
 
-        self.generate_cross()
+    def run(self, cross):
+        self._screen.blit(self._images['background'], (0, 0))
+        up_road, right_road, down_road, left_road = cross.get_road_list()
+        self.draw_cars_on_road(up_road, 'up')
+        self.draw_cars_on_road(down_road, 'down')
+        self.draw_cars_on_road(left_road, 'left')
+        self.draw_cars_on_road(right_road, 'right')
+        pygame.display.update()
+        time.sleep(1)
+
+    def draw_cars_on_road(self, road, direction):
+        if road is None:
+            return
+        start_positions = START_POSITIONS[direction]
+        positive_negative_digits = self._images['digits']['herizontal'] if direction in ('left', 'right') else self._images['digits']['vertical']
+        position_delta = POSITIONS_DELTA['herizontal'] if direction in ('left', 'right') else POSITIONS_DELTA['vertical']
+        digit_delta = DIGIT_DELTA['herizontal'] if direction in ('left', 'right') else DIGIT_DELTA['vertical']
+
+        self.draw_cars_one_side(road.get_positive_lanes(), start_positions['positive'],
+                                positive_negative_digits['positive'], position_delta['positive'], digit_delta['positive'], direction)
+        if road.is_duplex():
+            self.draw_cars_one_side(road.get_negative_lanes(), start_positions['negative'],
+                                    positive_negative_digits['negative'], position_delta['negative'], digit_delta['negative'], direction)
+
+    def draw_cars_one_side(self, lanes, start_position, digits, position_delta, digit_delta, direction):
+        start_x, start_y = start_position
+        delta_x, delta_y = position_delta
+        digit_delta_x, digit_delta_y = digit_delta
+        for i, lane in enumerate(lanes):
+            p = lane.get_head()
+            while p:
+                if direction in ('left', 'right'):
+                    x = start_x + (p.position - 1) * delta_x
+                    y = start_y + i * delta_y
+                else:
+                    x = start_x + i * delta_x
+                    y = start_y + (p.position - 1) * delta_y
+                car_id = [int(x) for x in list(str(p.car.get_id()))]
+                for j, d in enumerate(car_id):
+                    self._screen.blit(digits[d], (x + digit_delta_x * j, y + digit_delta_y * j))
+                p = p.next
 
     def generate_cross(self):
         """
@@ -65,3 +246,6 @@ class Game(object):
 
 if __name__ == "__main__":
     g = Game()
+    # 生成cross地图
+    # g.generate_cross()
+    g.run()
