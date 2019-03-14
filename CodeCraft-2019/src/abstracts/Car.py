@@ -91,7 +91,10 @@ class Car(object):
         if len(self._path) == 0:
             return None, None
 
-        return self._path.pop(0)
+        return self._path[0]
+
+    def next_road(self):
+        self._current_road, self._current_direction = self._path.pop(0)
 
     def switch_next_road(self):
         self._current_road, self._current_direction = self._path.pop(0)

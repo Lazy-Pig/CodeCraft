@@ -2,10 +2,11 @@ from queue import Queue
 
 
 class LaneSlot(object):
-    def __init__(self, car, position, next=None):
+    def __init__(self, car, position, next=None, pre=None):
         self.car = car
         self.position = position
         self.next = next
+        self.pre = pre
 
 
 class Lane(object):
@@ -43,7 +44,10 @@ class Lane(object):
             current_v = min(self._speed, lane_slot_point.car.get_speed())
             # 肯定未驶出本车道
             if current_v <= self._length - lane_slot_point.position:
-                lane_slot_point.position += current_v
+                if lane_slot_point.pre is None or lane_slot_point == self._head:
+                    lane_slot_point.position += current_v
+                else:
+                    lane_slot_point.position = min(lane_slot_point.position + current_v, lane_slot_point.pre.position - 1)
                 lane_slot_point.car.set_current_position(lane_slot_point.position)
                 lane_slot_point.car.set_current_tick(global_tick)
             # 可能驶出本车道
@@ -60,11 +64,12 @@ class Lane(object):
                 next_v = min(next_road.get_speed(), lane_slot_point.car.get_speed())
                 # 下一时刻驶出本车道
                 if next_v - current_dist <= 0:
-                    lane_slot_point.position = self._length
+                    lane_slot_point.position = self._length if self._head == lane_slot_point else lane_slot_point.pre.position - 1
                     lane_slot_point.car.set_current_position(lane_slot_point.position)
                     lane_slot_point.car.set_current_tick(global_tick)
                 # 当前时刻驶出本车道，进入global_exit_queue
                 else:
+                    lane_slot_point.car.next_road()
                     next_dist = next_v - current_dist
                     car = self.exit()
                     if (next_road, next_road_direction) not in self.global_exit_queue:
@@ -98,12 +103,15 @@ class Lane(object):
             self._head = self._tail = slot
         else:
             slot.next = None
+            slot.pre = self._tail
             self._tail.next = slot
             self._tail = slot
 
     def exit(self):
         car = self._head.car
         self._head = self._head.next
+        if self._head is not None:
+            self._head.pre = None
         return car
 
     def get_head(self):
