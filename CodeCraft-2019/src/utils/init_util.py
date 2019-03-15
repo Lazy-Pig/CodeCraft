@@ -1,4 +1,4 @@
-from ..abstracts import *
+from src.abstracts import *
 
 
 def create_object_from_file(path, class_name, global_exit_queue):

@@ -1,4 +1,5 @@
 from Lane import Lane
+import logging
 
 
 class Road(object):
@@ -16,9 +17,11 @@ class Road(object):
         self.global_exit_queue = global_exit_queue
         self._lanes = {'positive': [Lane(i, self._speed, self._length, self, global_exit_queue)
                                     for i in range(self._channel)]}
+        self._car_num = {'positive': 0}
         if self._is_duplex:
             self._lanes['negative'] = [Lane(i, self._speed, self._length, self, global_exit_queue)
                                        for i in range(self._channel)]
+            self._car_num['negative'] = 0
 
     def go_by_tick(self, global_tick):
         """
@@ -27,33 +30,37 @@ class Road(object):
 
         @param global_tick: int
         """
+        self._car_num['positive'] = 0
         for lane in self._lanes["positive"]:
             lane.go_by_tick(global_tick)
+            self._car_num['positive'] += lane.get_car_num()
         if self._is_duplex:
+            self._car_num['negative'] = 0
             for lane in self._lanes["negative"]:
                 lane.go_by_tick(global_tick)
+                self._car_num['negative'] += lane.get_car_num()
 
     def enter_all(self, global_tick):
         """
         将当前tick所有准备进入本Road的车辆安置妥当
 
         """
-        self.enter_one_side(True, global_tick)
+        self.enter_one_side('positive', global_tick)
         if self._is_duplex:
-            self.enter_one_side(False, global_tick)
+            self.enter_one_side('negative', global_tick)
 
     def enter_one_side(self, direction, global_tick):
         """
         安置单边的车辆，遵循：直行 > 左转 > 右转 的优先级
 
-        @param direction: bool
+        @param direction: 'positive' or 'negative'
         @param global_tick: int
         """
         # 没有可进入的车辆
         if (self, direction) not in self.global_exit_queue:
             return
         all_cars_will_enter = self.global_exit_queue[(self, direction)]
-        entrance = self._source if direction else self._destination
+        entrance = self._source if direction == 'positive' else self._destination
         neighbors = entrance.get_road_list()
         index_of_entrance = neighbors.index(self)
         straight_road = neighbors[(index_of_entrance + 2) % 4]
@@ -66,12 +73,14 @@ class Road(object):
             all_lanes_straight_cars = all_cars_will_enter[road]
             self.enter_from_same_road(all_lanes_straight_cars, direction, global_tick)
 
+        self._car_num[direction] = sum([lane.get_car_num() for lane in self._lanes[direction]])
+
     def enter_from_same_road(self, all_lanes_cars, direction, global_tick):
         """
         从同一Road进入的本Road的车辆，遵循：从车道号小的到车道号大的蛇形循环 依次进入
 
         @param all_lanes_cars: list
-        @param direction: bool
+        @param direction: 'positive' or 'negative'
         @param global_tick: int
         """
         channel_num = len(all_lanes_cars)
@@ -88,13 +97,14 @@ class Road(object):
 
         @param car: Car
         @param position: int，该车进入车道后的这一时刻位于车道的哪个位置，取值[1,length]
-        @param direction: bool，进入的Road的方向
+        @param direction: str，进入的Road的方向, 'positive' or 'negative'
         @param global_tick: int
         """
         assert 0 < position <= self._length
-        lanes = self._lanes["positive"] if direction else self._lanes["negative"]
+        lanes = self._lanes[direction]
+        cross = self._source if direction == 'positive' else self._destination
         if all([l.is_full() for l in lanes]):
-            print("Car(%d)不能进入Road（%d）" % (car.get_id(), self._id))
+            logging.warning("Cross(%d): Car(%d)不能进入Road（%d）" % (cross.get_id(), car.get_id(), self._id))
         for lane in lanes:
             if not lane.is_full():
                 lane.enter(car, position, global_tick)
@@ -141,3 +151,9 @@ class Road(object):
 
     def is_duplex(self):
         return self._is_duplex == 1
+
+    def get_car_num(self, direction):
+        return self._car_num[direction]
+
+    def is_full(self, direction):
+        return all([lane.is_full() for lane in self._lanes[direction]])

@@ -29,14 +29,13 @@ class Car(object):
     def is_running(self):
         return self._current_road is not None
 
-    def start_running(self, path, global_tick):
+    def start_running(self, global_tick):
         """
         根据制定的path开始行走
 
         @param path: list of (Road, bool)，路线经过的Road;bool为true则为正向，为false则为反向
         @param global_tick: int，开始行走的时间
         """
-        self._path = path
         self._current_road, self._current_direction = self._path.pop(0)
         position = min(self._speed, self._current_road.get_speed())
         self._current_road.enter(self, position, self._current_direction)
@@ -92,9 +91,6 @@ class Car(object):
             return None, None
 
         return self._path[0]
-
-    def next_road(self):
-        self._current_road, self._current_direction = self._path.pop(0)
 
     def switch_next_road(self):
         self._current_road, self._current_direction = self._path.pop(0)

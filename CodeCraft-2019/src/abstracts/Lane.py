@@ -1,4 +1,5 @@
 from queue import Queue
+import logging
 
 
 class LaneSlot(object):
@@ -24,6 +25,7 @@ class Lane(object):
         # head指向本车道的第一辆车，tail指向本车道的最后一辆车
         self._head = None
         self._tail = None
+        self._car_num = 0
 
     def is_full(self):
         return self._tail is not None and self._tail.position == 1
@@ -69,7 +71,7 @@ class Lane(object):
                     lane_slot_point.car.set_current_tick(global_tick)
                 # 当前时刻驶出本车道，进入global_exit_queue
                 else:
-                    lane_slot_point.car.next_road()
+                    lane_slot_point.car.switch_next_road()
                     next_dist = next_v - current_dist
                     car = self.exit()
                     if (next_road, next_road_direction) not in self.global_exit_queue:
@@ -106,13 +108,18 @@ class Lane(object):
             slot.pre = self._tail
             self._tail.next = slot
             self._tail = slot
+        self._car_num += 1
 
     def exit(self):
         car = self._head.car
         self._head = self._head.next
         if self._head is not None:
             self._head.pre = None
+        self._car_num -= 1
         return car
 
     def get_head(self):
         return self._head
+
+    def get_car_num(self):
+        return self._car_num

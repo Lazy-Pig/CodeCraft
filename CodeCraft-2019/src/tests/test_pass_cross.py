@@ -2,6 +2,13 @@ import unittest
 from ..utils.init_util import build_objects_from_files
 from queue import Queue
 from ..game.Game import Game
+import logging
+
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    filemode='a')
 
 
 def test_helper(car_path, road_path, cross_path, total_tick=6, start_position=10):
@@ -19,7 +26,7 @@ def test_helper(car_path, road_path, cross_path, total_tick=6, start_position=10
         car_id += 100
 
     for car_id in id_2_cars:
-        id_2_cars[car_id].set_path([(id_2_roads[2], True)])
+        id_2_cars[car_id].set_path([(id_2_roads[2], 'positive')])
 
     while global_tick < total_tick:
         g.run(id_2_cross[2])
@@ -65,6 +72,13 @@ class TestPassCross(unittest.TestCase):
                     start_position=8)
 
     def test_case6(self):
+        """
+        目前的道路更新机制是，在当前时刻所有道路都go_by_tick，
+        并将每个道路的驶出车辆全部驶出存放于全局的字典global_exit_queue中，
+        待所有道路全部go_by_tick结束后统一对每个道路进行enter
+
+        @NOTICE： 未考虑目标道路无法容纳全部想要enter的汽车的情况，如过发生，则会丢弃无法容纳的车辆
+        """
         g = Game()
         id_2_cars, id_2_roads, id_2_cross, global_exit_queue = \
             build_objects_from_files(car_path='src/tests/test_pass_cross_cases/config6/car.txt',
@@ -87,7 +101,7 @@ class TestPassCross(unittest.TestCase):
             car_id += 100
 
         for car_id in id_2_cars:
-            id_2_cars[car_id].set_path([(id_2_roads[2], True)])
+            id_2_cars[car_id].set_path([(id_2_roads[2], 'positive')])
 
         while global_tick < 6:
             g.run(id_2_cross[5])
