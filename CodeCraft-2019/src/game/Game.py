@@ -272,11 +272,11 @@ class Game(object):
         digit_delta = DIGIT_DELTA[direction]
 
         draw_direction = 'negative' if road.get_source() == self.cross else 'positive'
-        self.draw_cars_one_side(road.get_positive_lanes(), start_positions[draw_direction],
+        self.draw_cars_one_side(road.get_lanes('positive'), start_positions[draw_direction],
                                 positive_negative_digits[draw_direction], position_delta[draw_direction], digit_delta[draw_direction], direction)
         if road.is_duplex():
             draw_direction = 'positive' if road.get_destination() == self.cross else 'negative'
-            self.draw_cars_one_side(road.get_negative_lanes(), start_positions[draw_direction],
+            self.draw_cars_one_side(road.get_lanes('negative'), start_positions[draw_direction],
                                     positive_negative_digits[draw_direction], position_delta[draw_direction], digit_delta[draw_direction], direction)
 
     def draw_cars_one_side(self, lanes, start_position, digits, position_delta, digit_delta, direction):

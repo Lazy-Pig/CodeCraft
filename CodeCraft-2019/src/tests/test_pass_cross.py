@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 def test_helper(car_path, road_path, cross_path, total_tick=6, start_position=10):
     g = Game()
-    id_2_cars, id_2_roads, id_2_cross, global_exit_queue = \
+    id_2_cars, id_2_roads, id_2_cross = \
         build_objects_from_files(car_path=car_path,
                                  road_path=road_path,
                                  cross_path=cross_path)
@@ -29,13 +29,12 @@ def test_helper(car_path, road_path, cross_path, total_tick=6, start_position=10
         id_2_cars[car_id].set_path([(id_2_roads[2], 'positive')])
 
     while global_tick < total_tick:
+        global_tick += 1
         g.run(id_2_cross[2])
         for road_id in id_2_roads:
             id_2_roads[road_id].go_by_tick(global_tick)
-        for road_id in id_2_roads:
-            id_2_roads[road_id].enter_all(global_tick)
-        global_exit_queue.clear()
-        global_tick += 1
+        for cross_id in sorted(id_2_cross.keys()):
+            id_2_cross[cross_id].go_by_tick(global_tick)
 
 
 class TestPassCross(unittest.TestCase):
@@ -80,7 +79,7 @@ class TestPassCross(unittest.TestCase):
         @NOTICE： 未考虑目标道路无法容纳全部想要enter的汽车的情况，如过发生，则会丢弃无法容纳的车辆
         """
         g = Game()
-        id_2_cars, id_2_roads, id_2_cross, global_exit_queue = \
+        id_2_cars, id_2_roads, id_2_cross = \
             build_objects_from_files(car_path='src/tests/test_pass_cross_cases/config6/car.txt',
                                      road_path='src/tests/test_pass_cross_cases/config6/road.txt',
                                      cross_path='src/tests/test_pass_cross_cases/config6/cross.txt')
@@ -104,10 +103,9 @@ class TestPassCross(unittest.TestCase):
             id_2_cars[car_id].set_path([(id_2_roads[2], 'positive')])
 
         while global_tick < 6:
+            global_tick += 1
             g.run(id_2_cross[5])
             for road_id in id_2_roads:
                 id_2_roads[road_id].go_by_tick(global_tick)
-            for road_id in id_2_roads:
-                id_2_roads[road_id].enter_all(global_tick)
-            global_exit_queue.clear()
-            global_tick += 1
+            for cross_id in sorted(id_2_cross.keys()):
+                id_2_cross[cross_id].go_by_tick(global_tick)

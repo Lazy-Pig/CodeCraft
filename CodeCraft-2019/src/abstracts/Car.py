@@ -94,3 +94,6 @@ class Car(object):
 
     def switch_next_road(self):
         self._current_road, self._current_direction = self._path.pop(0)
+
+    def get_current_tick(self):
+        return self._current_tick
