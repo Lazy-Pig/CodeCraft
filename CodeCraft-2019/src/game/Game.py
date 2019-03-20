@@ -252,7 +252,7 @@ class Game(object):
             }
         }
 
-    def run(self, cross):
+    def run(self, cross, delay=0):
         self.cross = cross
         self._screen.blit(self._images['background'], (0, 0))
         up_road, right_road, down_road, left_road = cross.get_road_list()
@@ -261,7 +261,7 @@ class Game(object):
         self.draw_cars_on_road(left_road, 'left')
         self.draw_cars_on_road(right_road, 'right')
         pygame.display.update()
-        time.sleep(1)
+        time.sleep(delay)
 
     def draw_cars_on_road(self, road, direction):
         if road is None:
