@@ -53,10 +53,9 @@ class GeneralScheduler(object):
             car_num = road.get_car_num('negative')
             is_full = road.is_full('negative')
         else:
-            car_num = road.get_length()
-            is_full = True
+            return False
         # return not is_full and (car_num >= int(road.get_length() * self._congestion_ratio))
-        return not is_full and (car_num >= 1)
+        return is_full or (car_num >= road.get_channel_number())
 
     def arrived(self, car):
         self._arrived_cars.append(car.get_id())
