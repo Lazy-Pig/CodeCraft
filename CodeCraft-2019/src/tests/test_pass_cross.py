@@ -4,7 +4,7 @@ from utils.init_util import build_objects_from_files
 from queue import Queue
 from game.Game import Game
 import logging
-from src.schedulers.EmptyScheduler import EmptyScheduler
+from schedulers.EmptyScheduler import EmptyScheduler
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -74,9 +74,9 @@ def get_current_roads_state(id_2_roads):
 
 class TestPassCross(unittest.TestCase):
     def test_case1(self):
-        predict_state = test_helper(car_path='src/tests/test_pass_cross_cases/config1/car.txt',
-                                    road_path='src/tests/test_pass_cross_cases/config1/road.txt',
-                                    cross_path='src/tests/test_pass_cross_cases/config1/cross.txt',
+        predict_state = test_helper(car_path='test_pass_cross_cases/config1/car.txt',
+                                    road_path='test_pass_cross_cases/config1/road.txt',
+                                    cross_path='test_pass_cross_cases/config1/cross.txt',
                                     total_tick=4,
                                     delay=DELAY)
         truely_states = [
@@ -96,9 +96,9 @@ class TestPassCross(unittest.TestCase):
         self.assertEqual(predict_state, truely_states)
 
     def test_case2(self):
-        predict_state = test_helper(car_path='src/tests/test_pass_cross_cases/config2/car.txt',
-                                    road_path='src/tests/test_pass_cross_cases/config2/road.txt',
-                                    cross_path='src/tests/test_pass_cross_cases/config2/cross.txt',
+        predict_state = test_helper(car_path='test_pass_cross_cases/config2/car.txt',
+                                    road_path='test_pass_cross_cases/config2/road.txt',
+                                    cross_path='test_pass_cross_cases/config2/cross.txt',
                                     total_tick=4,
                                     delay=DELAY)
         truely_states = [
@@ -118,9 +118,9 @@ class TestPassCross(unittest.TestCase):
         self.assertEqual(predict_state, truely_states)
 
     def test_case3(self):
-        predict_state = test_helper(car_path='src/tests/test_pass_cross_cases/config3/car.txt',
-                                    road_path='src/tests/test_pass_cross_cases/config3/road.txt',
-                                    cross_path='src/tests/test_pass_cross_cases/config3/cross.txt',
+        predict_state = test_helper(car_path='test_pass_cross_cases/config3/car.txt',
+                                    road_path='test_pass_cross_cases/config3/road.txt',
+                                    cross_path='test_pass_cross_cases/config3/cross.txt',
                                     total_tick=4,
                                     delay=DELAY)
         truely_states = [
@@ -140,9 +140,9 @@ class TestPassCross(unittest.TestCase):
         self.assertEqual(predict_state, truely_states)
 
     def test_case4(self):
-        predict_state = test_helper(car_path='src/tests/test_pass_cross_cases/config4/car.txt',
-                                    road_path='src/tests/test_pass_cross_cases/config4/road.txt',
-                                    cross_path='src/tests/test_pass_cross_cases/config4/cross.txt',
+        predict_state = test_helper(car_path='test_pass_cross_cases/config4/car.txt',
+                                    road_path='test_pass_cross_cases/config4/road.txt',
+                                    cross_path='test_pass_cross_cases/config4/cross.txt',
                                     total_tick=5,
                                     start_position=8,
                                     delay=DELAY)
@@ -167,9 +167,9 @@ class TestPassCross(unittest.TestCase):
         self.assertEqual(predict_state, truely_states)
 
     def test_case5(self):
-        predict_state = test_helper(car_path='src/tests/test_pass_cross_cases/config5/car.txt',
-                                    road_path='src/tests/test_pass_cross_cases/config5/road.txt',
-                                    cross_path='src/tests/test_pass_cross_cases/config5/cross.txt',
+        predict_state = test_helper(car_path='test_pass_cross_cases/config5/car.txt',
+                                    road_path='test_pass_cross_cases/config5/road.txt',
+                                    cross_path='test_pass_cross_cases/config5/cross.txt',
                                     total_tick=4,
                                     start_position=8,
                                     delay=DELAY)
@@ -192,9 +192,9 @@ class TestPassCross(unittest.TestCase):
     def test_case6(self):
         g = Game()
         id_2_cars, id_2_roads, id_2_cross = \
-            build_objects_from_files(car_path='src/tests/test_pass_cross_cases/config6/car.txt',
-                                     road_path='src/tests/test_pass_cross_cases/config6/road.txt',
-                                     cross_path='src/tests/test_pass_cross_cases/config6/cross.txt')
+            build_objects_from_files(car_path='test_pass_cross_cases/config6/car.txt',
+                                     road_path='test_pass_cross_cases/config6/road.txt',
+                                     cross_path='test_pass_cross_cases/config6/cross.txt')
         global_tick = 1
         car_id = 100
         for lane in id_2_roads[4]._lanes['positive']:
