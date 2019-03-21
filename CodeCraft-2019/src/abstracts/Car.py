@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 
 
 class Car(object):
@@ -15,12 +16,14 @@ class Car(object):
         self._current_position = None
         self._next_road = None
         self._path = None
+        self._pass_path = []
         self._current_tick = 0
         self._begin_tick = -1
         self._finish_tick = -1
         self._is_arrived = False
 
     def set_is_arrived(self):
+        self._pass_path.append(self._current_road.get_id())
         self._is_arrived = True
 
     def is_arrived(self):
@@ -38,7 +41,7 @@ class Car(object):
         """
         self._current_road, self._current_direction = self._path.pop(0)
         position = min(self._speed, self._current_road.get_speed())
-        self._current_road.enter(self, position, self._current_direction)
+        self._current_road.enter(self, position, self._current_direction, global_tick)
         self._begin_tick = global_tick
 
     def go_by_tick(self):
@@ -93,7 +96,14 @@ class Car(object):
         return self._path[0]
 
     def switch_next_road(self):
+        self._pass_path.append(self._current_road.get_id())
         self._current_road, self._current_direction = self._path.pop(0)
 
     def get_current_tick(self):
         return self._current_tick
+
+    def get_begin_tick(self):
+        return self._begin_tick
+
+    def get_pass_path(self):
+        return self._pass_path

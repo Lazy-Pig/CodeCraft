@@ -1,5 +1,7 @@
-from Lane import Lane
+# -*- coding: UTF-8 -*-
+from abstracts.Lane import Lane
 import logging
+import math
 
 
 class Road(object):
@@ -14,6 +16,7 @@ class Road(object):
         self._source = None
         self._destination = None
         self._current_tick = 0
+        self._scheduler = None
         self._lanes = {'positive': [Lane(i, self._speed, self._length, self)
                                     for i in range(self._channel)]}
         self._car_num = {'positive': 0}
@@ -22,7 +25,7 @@ class Road(object):
             self._lanes['negative'] = [Lane(i, self._speed, self._length, self)
                                        for i in range(self._channel)]
             self._car_num['negative'] = 0
-            self._ready_exit_lane_index = {'negative': 0}
+            self._ready_exit_lane_index['negative'] = 0
 
     def go_by_tick(self, global_tick):
         """
@@ -62,6 +65,7 @@ class Road(object):
             if not lane.is_full():
                 lane.enter(car, position, global_tick)
                 break
+        self._car_num[direction] = sum([l.get_car_num() for l in lanes])
 
     def get_id(self):
         return self._id
@@ -127,3 +131,19 @@ class Road(object):
 
     def exit(self, direction, lane_num):
         return self._lanes[direction][lane_num].exit()
+
+    def get_weight(self, car):
+        """
+        车通过道路需要用的时间作为图的权重
+
+        @param car: Car
+        @return int
+        """
+        v = min(car.get_speed(), self.get_speed())
+        return math.ceil(self.get_length() / v)
+
+    def set_scheduler(self, scheduler):
+        self._scheduler = scheduler
+
+    def get_scheduler(self):
+        return self._scheduler

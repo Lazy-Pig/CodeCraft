@@ -1,8 +1,10 @@
+# -*- coding: UTF-8 -*-
 import unittest
 from ..utils.init_util import build_objects_from_files
 from queue import Queue
 from ..game.Game import Game
 import logging
+from src.schedulers.EmptyScheduler import EmptyScheduler
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -28,6 +30,11 @@ def test_helper(car_path, road_path, cross_path, total_tick=3, start_position=10
 
     for car_id in id_2_cars:
         id_2_cars[car_id].set_path([(id_2_roads[2], 'positive')])
+        id_2_cars[car_id]._current_road = id_2_roads[1]
+
+    scheduler = EmptyScheduler(id_2_cars, id_2_roads, id_2_cross)
+    for i in id_2_roads:
+        id_2_roads[i].set_scheduler(scheduler)
 
     predict_state = []
     while global_tick < total_tick:
@@ -192,22 +199,32 @@ class TestPassCross(unittest.TestCase):
         car_id = 100
         for lane in id_2_roads[4]._lanes['positive']:
             lane.enter(id_2_cars[car_id], 10, global_tick)
+            id_2_cars[car_id]._current_road = id_2_roads[4]
             lane.enter(id_2_cars[car_id + 1], 10, global_tick)
+            id_2_cars[car_id + 1]._current_road = id_2_roads[4]
             car_id += 100
         for lane in id_2_roads[3]._lanes['positive']:
             lane.enter(id_2_cars[car_id], 10, global_tick)
+            id_2_cars[car_id]._current_road = id_2_roads[3]
             lane.enter(id_2_cars[car_id + 1], 10, global_tick)
+            id_2_cars[car_id + 1]._current_road = id_2_roads[3]
             car_id += 100
 
         for lane in id_2_roads[1]._lanes['positive']:
             lane.enter(id_2_cars[car_id], 10, global_tick)
+            id_2_cars[car_id]._current_road = id_2_roads[1]
             lane.enter(id_2_cars[car_id + 1], 10, global_tick)
+            id_2_cars[car_id + 1]._current_road = id_2_roads[1]
             car_id += 100
 
         for car_id in id_2_cars:
             id_2_cars[car_id].set_path([(id_2_roads[2], 'positive')])
 
+        scheduler = EmptyScheduler(id_2_cars, id_2_roads, id_2_cross)
+        for i in id_2_roads:
+            id_2_roads[i].set_scheduler(scheduler)
         predict_state = []
+
         while global_tick < 4:
             g.run(id_2_cross[5], delay=0)
             roads_state = get_current_roads_state(id_2_roads)

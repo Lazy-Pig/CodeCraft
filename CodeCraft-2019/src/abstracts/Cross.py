@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 
 
 class Cross(object):
@@ -49,14 +50,13 @@ class Cross(object):
                     # 这条道路没有要驶出的车辆
                     if exit_slot is None and lane_index is None:
                         continue
-
-                    # 如果下一条路已经满了则直接更新当前道路
-                    if next_road.is_full(next_road_direction):
-                        road.lane_go_by_tick(global_tick, direction, lane_index)
-                        continue
-
                     ready_out_slot[(road, direction)] = (exit_slot, lane_index, next_road, next_road_direction, next_dist)
                 exit_slot, lane_index, next_road, next_road_direction, next_dist = ready_out_slot[(road, direction)]
+                # 如果下一条路已经满了则直接更新当前道路
+                if next_road.is_full(next_road_direction):
+                    ready_out_slot.pop((road, direction))
+                    road.lane_go_by_tick(global_tick, direction, lane_index)
+                    continue
 
                 driving_direction = self._judge_driving_direction(road, next_road)
                 if (next_road, next_road_direction) not in ready_in_slot:

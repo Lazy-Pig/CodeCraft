@@ -1,4 +1,8 @@
-from src.abstracts import *
+# -*- coding: UTF-8 -*-
+from abstracts.Car import Car
+from abstracts.Road import Road
+from abstracts.Lane import Lane
+from abstracts.Cross import Cross
 
 
 def create_object_from_file(path, class_name):

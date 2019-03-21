@@ -1,4 +1,4 @@
-from queue import Queue
+# -*- coding: UTF-8 -*-
 import logging
 
 
@@ -60,6 +60,7 @@ class Lane(object):
                     lane_slot_point.car.set_current_tick(global_tick)
                     car = self.exit()
                     car.set_is_arrived()
+                    self.road.get_scheduler().arrived(car)
                     lane_slot_point = lane_slot_point.next
                     continue
                 current_dist = self._length - lane_slot_point.position
