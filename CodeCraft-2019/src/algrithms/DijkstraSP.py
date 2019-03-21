@@ -37,7 +37,6 @@ class DijkstraSP(object):
 
     def path_to(self, v):
         if not self.has_path_to(v):
-            draw_graph(self, v)
             return None
 
         path = []
