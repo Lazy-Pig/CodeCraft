@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
 import unittest
-from ..utils.init_util import build_objects_from_files
+from utils.init_util import build_objects_from_files
 from queue import Queue
-from ..game.Game import Game
+from game.Game import Game
 import logging
 from src.schedulers.EmptyScheduler import EmptyScheduler
 
