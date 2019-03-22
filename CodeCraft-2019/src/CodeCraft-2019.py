@@ -2,7 +2,6 @@
 import logging
 import sys
 from utils.init_util import build_objects_from_files
-from game.Game import Game
 from schedulers.GeneralScheduler import GeneralScheduler
 
 
@@ -49,8 +48,9 @@ def main():
 
     # to write output file
     with open(answer_path, 'w') as f:
+        f.write('#(carId,StartTime,RoadId...)\n')
         for car_id in sorted(id_2_cars.keys()):
-            f.write("%d, %d, %s\n" % (car_id,
+            f.write("(%d, %d, %s)\n" % (car_id,
                                       id_2_cars[car_id].get_begin_tick(),
                                       ", ".join([str(road_id) for road_id in id_2_cars[car_id].get_pass_path()])))
         f.truncate(f.tell() - 1)

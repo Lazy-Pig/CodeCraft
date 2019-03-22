@@ -29,6 +29,8 @@ class GeneralScheduler(object):
         self._cars_just_run = []
         for car_id in self._not_start_cars_ids:
             car = self._id_2_cars[car_id]
+            if car.get_plan_time() > global_tick:
+                continue
             car_source = car.get_source()
             # 车辆出发点的四个道路中，都不那么拥塞就可以出发
             if all([road is None or not self._is_this_road_congestion(road, entrance=car_source) for road in car_source.get_road_list()]):
