@@ -107,3 +107,6 @@ class Car(object):
 
     def get_pass_path(self):
         return self._pass_path
+
+    def get_current_road(self):
+        return self._current_road, self._current_direction

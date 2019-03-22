@@ -114,7 +114,7 @@ class Road(object):
 
     def get_ready_exit_slot(self, direction):
         if all([not l.is_waiting() for l in self._lanes[direction]]):
-            return None, None, None, None, None
+            return None, None, None
 
         exit_slot = self._lanes[direction][self._ready_exit_lane_index[direction]].get_head()
         while exit_slot is None or exit_slot.state != 'waiting':
@@ -122,10 +122,7 @@ class Road(object):
             exit_slot = self._lanes[direction][self._ready_exit_lane_index[direction]].get_head()
 
         current_dist = self._length - exit_slot.position
-        next_road, next_road_direction = exit_slot.car.get_next_road()
-        next_v = min(next_road.get_speed(), exit_slot.car.get_speed())
-        next_dist = next_v - current_dist
-        result = (exit_slot, self._ready_exit_lane_index[direction], next_road, next_road_direction, next_dist)
+        result = (exit_slot, self._ready_exit_lane_index[direction], current_dist)
         self._ready_exit_lane_index[direction] = (self._ready_exit_lane_index[direction] + 1) % self._channel
         return result
 
@@ -143,8 +140,11 @@ class Road(object):
         @return float
         """
         v = min(car.get_speed(), self.get_speed())
-        ratio = self.get_car_num(direction) / (self._length * self._channel)
+        ratio = self.get_saturation(direction)
         return (self._length / v) * (1 + math.tan((math.pi * ratio) / 2))
+
+    def get_saturation(self, direction):
+        return self.get_car_num(direction) / (self._length * self._channel)
 
     def set_scheduler(self, scheduler):
         self._scheduler = scheduler

@@ -1,11 +1,13 @@
 # -*- coding: UTF-8 -*-
+import math
 
 
 class EdgeWeightedDigraph(object):
-    def __init__(self, car, roads):
+    def __init__(self, car, roads, invalid_road_ids=[]):
         self._car = car
         self.adj = {}
         self.roads = roads
+        self.invalid_road_ids = invalid_road_ids
         for road in roads:
             self.add_road(road, 'positive')
             if road.is_duplex():
@@ -17,11 +19,17 @@ class EdgeWeightedDigraph(object):
         if direction == 'positive':
             if road.get_source_id() not in self.adj:
                 self.adj[road.get_source_id()] = []
-            self.adj[road.get_source_id()].append((road, direction, road.get_weight(self._car, direction)))
+            if road.get_id() in self.invalid_road_ids:
+                self.adj[road.get_source_id()].append((road, direction, math.inf))
+            else:
+                self.adj[road.get_source_id()].append((road, direction, road.get_weight(self._car, direction)))
         else:
             if road.get_destination_id() not in self.adj:
                 self.adj[road.get_destination_id()] = []
-            self.adj[road.get_destination_id()].append((road, direction, road.get_weight(self._car, direction)))
+            if road.get_id() in self.invalid_road_ids:
+                self.adj[road.get_source_id()].append((road, direction, math.inf))
+            else:
+                self.adj[road.get_destination_id()].append((road, direction, road.get_weight(self._car, direction)))
 
     def get_cross_num(self):
         return self._cross_num

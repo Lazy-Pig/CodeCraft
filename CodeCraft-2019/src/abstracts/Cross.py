@@ -45,13 +45,14 @@ class Cross(object):
             ready_in_slot = {}
             for road, direction in self.from_road:
                 if (road, direction) not in ready_out_slot:
-                    exit_slot, lane_index, next_road, next_road_direction, next_dist = \
+                    exit_slot, lane_index, current_dist = \
                         road.get_ready_exit_slot(direction)
                     # 这条道路没有要驶出的车辆
                     if exit_slot is None and lane_index is None:
                         continue
-                    ready_out_slot[(road, direction)] = (exit_slot, lane_index, next_road, next_road_direction, next_dist)
-                exit_slot, lane_index, next_road, next_road_direction, next_dist = ready_out_slot[(road, direction)]
+                    ready_out_slot[(road, direction)] = (exit_slot, lane_index, current_dist)
+                exit_slot, lane_index, current_dist = ready_out_slot[(road, direction)]
+                next_road, next_road_direction = exit_slot.car.get_next_road()
                 # 如果下一条路已经满了则直接更新当前道路
                 if next_road.is_full(next_road_direction):
                     ready_out_slot.pop((road, direction))
@@ -85,7 +86,10 @@ class Cross(object):
                 # 这条道路没有要驶出的车辆
                 if (road, direction) not in ready_out_slot:
                     continue
-                (exit_slot, lane_index, next_road, next_road_direction, next_dist) = ready_out_slot[(road, direction)]
+                (exit_slot, lane_index, current_dist) = ready_out_slot[(road, direction)]
+                next_road, next_road_direction = exit_slot.car.get_next_road()
+                next_v = min(next_road.get_speed(), exit_slot.car.get_speed())
+                next_dist = next_v - current_dist
                 if (road, direction) == ready_in_slot[(next_road, next_road_direction)]:
                     ready_out_slot.pop((road, direction))
                     car = road.exit(direction, lane_index)
