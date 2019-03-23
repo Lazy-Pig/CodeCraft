@@ -3,6 +3,7 @@ import logging
 import sys
 from utils.init_util import build_objects_from_files
 from schedulers.GeneralScheduler import GeneralScheduler
+import time
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -32,10 +33,9 @@ def main():
     for i in id_2_roads:
         id_2_roads[i].set_scheduler(scheduler)
 
-    # g = Game()
     global_tick = 1
+    start = time.time()
     while not scheduler.is_all_arrived():
-        # g.run(id_2_cross[21], delay=2)
         # 所有道路状态更新
         for road_id in id_2_roads:
             id_2_roads[road_id].go_by_tick(global_tick)
@@ -44,7 +44,8 @@ def main():
             id_2_cross[cross_id].go_by_tick(global_tick)
         scheduler.scheduling(global_tick)
         global_tick += 1
-    logging.info("all cars have arrived")
+    end = time.time()
+    logging.info("all cars have arrived, total ticks: %d, total time %d s" % (global_tick - 1, end-start))
 
     # to write output file
     with open(answer_path, 'w') as f:

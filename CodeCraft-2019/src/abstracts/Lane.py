@@ -138,5 +138,8 @@ class Lane(object):
     def get_head(self):
         return self._head
 
+    def get_tail(self):
+        return self._tail
+
     def get_car_num(self):
         return self._car_num
