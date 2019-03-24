@@ -52,7 +52,7 @@ def build_objects_from_files(car_path, road_path, cross_path):
 
 def build_path_from_answer(id_2_cars, id_2_roads, answer_path):
     with open(answer_path, 'r') as f:
-        next(f)
+        # next(f)
         for line in f:
             args = [int(ch) for ch in line.strip("()\n").split(",")]
             car_id, begin_tick = args[0], args[1]
@@ -69,4 +69,3 @@ def build_path_from_answer(id_2_cars, id_2_roads, answer_path):
                     path.append((road, 'negative'))
                     last_cross_id = road.get_source_id()
             car.set_path(path)
-
