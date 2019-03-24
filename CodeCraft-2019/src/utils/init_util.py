@@ -48,3 +48,25 @@ def build_objects_from_files(car_path, road_path, cross_path):
         roads = [id_2_roads[id] if id != -1 else None for id in road_id_list]
         cross.set_road_list(roads)
     return id_2_cars, id_2_roads, id_2_cross
+
+
+def build_path_from_answer(id_2_cars, id_2_roads, answer_path):
+    with open(answer_path, 'r') as f:
+        next(f)
+        for line in f:
+            args = [int(ch) for ch in line.strip("()\n").split(",")]
+            car_id, begin_tick = args[0], args[1]
+            car = id_2_cars[car_id]
+            car.set_begin_tick(begin_tick)
+            path = []
+            last_cross_id = car.get_source_id()
+            for road_id in args[2:]:
+                road = id_2_roads[road_id]
+                if road.get_source_id() == last_cross_id:
+                    path.append((road, 'positive'))
+                    last_cross_id = road.get_destination_id()
+                else:
+                    path.append((road, 'negative'))
+                    last_cross_id = road.get_source_id()
+            car.set_path(path)
+

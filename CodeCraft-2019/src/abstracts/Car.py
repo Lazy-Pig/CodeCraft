@@ -102,6 +102,9 @@ class Car(object):
     def get_current_tick(self):
         return self._current_tick
 
+    def set_begin_tick(self, tick):
+        self._begin_tick = tick
+
     def get_begin_tick(self):
         return self._begin_tick
 
