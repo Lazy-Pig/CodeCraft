@@ -53,26 +53,6 @@ def main():
             id_2_cross[cross_id].go_by_tick(global_tick)
         scheduler.scheduling(global_tick)
         global_tick += 1
-        roads_state = get_current_roads_state(id_2_roads)
-        # cross_state = {}
-        # for cross_id, cross in id_2_cross.items():
-        #     state = {}
-        #     for road_id in cross.get_road_id_list():
-        #         if road_id == -1:
-        #             continue
-        #         state[road_id] = roads_state[road_id]
-        #     if pre_cross_state is not None and pre_cross_state[cross_id] == state:
-        #         print('%d dead lock!!!' % cross_id)
-        #     cross_state[cross_id] = state
-
-        if pre_roads_state is not None:
-            # 前后状态完全一致表示出现循环等待死锁
-            if roads_state == pre_roads_state:
-                print(pre_roads_state)
-                # assert False
-
-        pre_roads_state = roads_state
-        # pre_cross_state = cross_state
     end = time.time()
     logging.info("all cars have arrived, total ticks: %d, total time %d s" % (global_tick - 1, end-start))
 
