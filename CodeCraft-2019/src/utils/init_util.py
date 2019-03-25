@@ -89,3 +89,25 @@ def all_is_done(id_2_roads):
                         return False
                     point = point.next
     return True
+
+
+def get_current_roads_state(id_2_roads):
+    roads_state = {}
+    for road_id in id_2_roads:
+        road = id_2_roads[road_id]
+        state = dict()
+        state['positive'] = [[] for _ in range(road.get_channel_number())]
+        for index, lane in enumerate(road.get_lanes('positive')):
+            slot_point = lane.get_head()
+            while slot_point:
+                state['positive'][index].append((slot_point.car.get_id(), slot_point.position))
+                slot_point = slot_point.next
+        if road.is_duplex():
+            state['negative'] = [[] for _ in range(road.get_channel_number())]
+            for index, lane in enumerate(road.get_lanes('negative')):
+                slot_point = lane.get_head()
+                while slot_point:
+                    state['negative'][index].append((slot_point.car.get_id(), slot_point.position))
+                    slot_point = slot_point.next
+        roads_state[road_id] = state
+    return roads_state
