@@ -69,3 +69,23 @@ def build_path_from_answer(id_2_cars, id_2_roads, answer_path):
                     path.append((road, 'negative'))
                     last_cross_id = road.get_source_id()
             car.set_path(path)
+
+
+def all_is_done(id_2_roads):
+    for road_id, road in id_2_roads.items():
+        for index, lane in enumerate(road.get_lanes('positive')):
+            point = lane.get_head()
+            if point is not None:
+                if point.state not in ('finish', 'init'):
+                    print("[positive] road: %d lane index: %d state: %s" % (road_id, index, point.state))
+                    return False
+                point = point.next
+        if road.is_duplex():
+            for index, lane in enumerate(road.get_lanes('negative')):
+                point = lane.get_head()
+                if point is not None:
+                    if point.state not in ('finish', 'init'):
+                        print("[negative] road: %d lane index: %d state: %s" % (road_id, index, point.state))
+                        return False
+                    point = point.next
+    return True

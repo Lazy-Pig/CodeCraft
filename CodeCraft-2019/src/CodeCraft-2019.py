@@ -1,13 +1,13 @@
 # -*- coding: UTF-8 -*-
 import logging
 import sys
-from utils.init_util import build_objects_from_files, build_path_from_answer
+from utils.init_util import build_objects_from_files, build_path_from_answer, all_is_done
 from schedulers.GeneralScheduler import GeneralScheduler
 from schedulers.Scheduler import Scheduler
 import time
 
 
-MODE = 'simulation'
+MODE = 'scheduling'
 logging.basicConfig(level=logging.DEBUG,
                     # filename='../logs/CodeCraft-2019.log',
                     format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
@@ -49,8 +49,20 @@ def main():
         for road_id in id_2_roads:
             id_2_roads[road_id].go_by_tick(global_tick)
         # 所有路口状态更新
-        for cross_id in sorted(id_2_cross.keys()):
-            id_2_cross[cross_id].go_by_tick(global_tick)
+        unfinished_cross_ids = list(sorted(id_2_cross.keys()))
+        while len(unfinished_cross_ids) > 0:
+            dead = True
+            next_cross_ids = []
+            for cross_id in unfinished_cross_ids:
+                cross = id_2_cross[cross_id]
+                cross.go_by_tick(global_tick)
+                if not id_2_cross[cross_id].is_done():
+                    next_cross_ids.append(cross_id)
+                if cross.has_updated() or cross.is_done():
+                    dead = False
+            unfinished_cross_ids = next_cross_ids
+            assert dead is False, print("dead lock in", unfinished_cross_ids)
+        assert all_is_done(id_2_roads)
         scheduler.scheduling(global_tick)
         global_tick += 1
     end = time.time()

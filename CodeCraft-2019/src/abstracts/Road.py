@@ -44,8 +44,8 @@ class Road(object):
                 self.lane_go_by_tick(global_tick, 'negative', i)
                 self._car_num['negative'] += self._lanes['negative'][i].get_car_num()
 
-    def lane_go_by_tick(self, global_tick, direction, lane_index):
-        self._lanes[direction][lane_index].go_by_tick(global_tick)
+    def lane_go_by_tick(self, global_tick, direction, lane_index, next_is_full=False):
+        self._lanes[direction][lane_index].go_by_tick(global_tick, next_is_full=next_is_full)
 
     def enter(self, car, position, direction, global_tick):
         """
@@ -111,6 +111,9 @@ class Road(object):
 
     def is_full(self, direction):
         return all([lane.is_full() for lane in self._lanes[direction]])
+
+    def is_any_waiting(self, direction):
+        return any([lane.get_tail() is not None and lane.get_tail().state == 'waiting' for lane in self._lanes[direction]])
 
     def get_ready_exit_slot(self, direction):
         if all([not l.is_waiting() for l in self._lanes[direction]]):

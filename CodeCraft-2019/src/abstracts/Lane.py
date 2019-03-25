@@ -8,7 +8,7 @@ class LaneSlot(object):
         self.position = position
         self.next = next
         self.pre = pre
-        self.state = None
+        self.state = 'init'
 
 
 class Lane(object):
@@ -39,7 +39,7 @@ class Lane(object):
     def get_current_tick(self):
         return self._current_tick
 
-    def go_by_tick(self, global_tick):
+    def go_by_tick(self, global_tick, next_is_full=False):
         """
         Lane上的所有车辆运行1个时间单位,
         未驶出本Lane的车辆状态记为finish
@@ -66,7 +66,7 @@ class Lane(object):
                 current_dist = self._length - lane_slot_point.position
                 next_v = min(next_road.get_speed(), lane_slot_point.car.get_speed())
                 # 下一时刻驶出本车道
-                if next_v - current_dist <= 0:
+                if next_v - current_dist <= 0 or next_is_full:
                     lane_slot_point.position = self._length
                     lane_slot_point.state = 'finish'
                     lane_slot_point.car.set_current_position(lane_slot_point.position)
