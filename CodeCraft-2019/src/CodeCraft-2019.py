@@ -35,25 +35,12 @@ def main():
 
     if MODE == 'scheduling':
         scheduler = RevertScheduler(id_2_cars, id_2_roads, id_2_cross)
-        for i in id_2_roads:
-            id_2_roads[i].set_scheduler(scheduler)
-        scheduler.multi_scheduling()
     else:
         scheduler = Scheduler(id_2_cars, id_2_roads, id_2_cross)
         build_path_from_answer(id_2_cars, id_2_roads, answer_path)
-        for i in id_2_roads:
-            id_2_roads[i].set_scheduler(scheduler)
-
-        global_tick = 1
-        start = time.time()
-        while not scheduler.is_all_arrived():
-            logging.info("current tick: %d" % global_tick)
-            scheduler.go_by_tick(global_tick)
-            assert all_is_done(id_2_roads)
-            scheduler.scheduling(global_tick)
-            global_tick += 1
-        end = time.time()
-        logging.info("all cars have arrived, total ticks: %d, total time %d s" % (global_tick - 1, end-start))
+    for i in id_2_roads:
+        id_2_roads[i].set_scheduler(scheduler)
+    scheduler.multi_scheduling()
 
     if MODE == 'scheduling':
         # to write output file

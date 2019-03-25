@@ -49,12 +49,11 @@ class BaseScheduler(object):
         logging.warning("dead lock in %s" % ",".join([str(id) for id in self._unfinished_cross_ids]))
 
     def multi_scheduling(self):
-        global_tick = 1
-        start = time.time()
         while not self.is_all_arrived():
-            logging.info("current tick: %d" % global_tick)
-            self.go_by_tick(global_tick)
-            self.scheduling(global_tick)
-            global_tick += 1
-        end = time.time()
-        logging.info("all cars have arrived, total ticks: %d, total time %d s" % (global_tick - 1, end-start))
+            if self._global_tick % 100 == 0:
+                logging.info("current tick: %d, running car number: %d, not start car number: %d" % (self._global_tick,
+                                                                                                     len(self._running_cars,),
+                                                                                                     len(self._not_start_cars_ids)))
+            self.go_by_tick(self._global_tick)
+            self.scheduling(self._global_tick)
+            self._global_tick += 1

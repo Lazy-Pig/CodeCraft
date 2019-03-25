@@ -25,6 +25,7 @@ class Car(object):
         self._begin_tick = -1
         self._finish_tick = -1
         self._is_arrived = False
+        self._total_time = 0
 
     def set_is_arrived(self):
         self._pass_path.append(self._current_road.get_id())
@@ -87,6 +88,8 @@ class Car(object):
 
     def set_path(self, path):
         self._path = path
+        for r, d in path:
+            self._total_time += r.get_weight(self)
 
     def get_path(self):
         return self._path
