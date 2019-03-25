@@ -1,8 +1,10 @@
 import logging
+import time
 
 
 class BaseScheduler(object):
     def __init__(self, id_2_cars, id_2_roads, id_2_cross):
+        self._global_tick = 1
         self._id_2_cars = id_2_cars
         self._id_2_roads = id_2_roads
         self._id_2_cross = id_2_cross
@@ -41,6 +43,18 @@ class BaseScheduler(object):
             self._unfinished_cross_ids = next_cross_ids
             if self._dead:
                 self.dead_lock_handler()
+                break
 
     def dead_lock_handler(self):
         logging.warning("dead lock in %s" % ",".join([str(id) for id in self._unfinished_cross_ids]))
+
+    def multi_scheduling(self):
+        global_tick = 1
+        start = time.time()
+        while not self.is_all_arrived():
+            logging.info("current tick: %d" % global_tick)
+            self.go_by_tick(global_tick)
+            self.scheduling(global_tick)
+            global_tick += 1
+        end = time.time()
+        logging.info("all cars have arrived, total ticks: %d, total time %d s" % (global_tick - 1, end-start))

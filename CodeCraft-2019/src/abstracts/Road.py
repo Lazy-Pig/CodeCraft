@@ -15,8 +15,10 @@ class Road(object):
         self._is_duplex = is_duplex
         self._source = None
         self._destination = None
+        self.clear()
+
+    def clear(self):
         self._current_tick = 0
-        self._scheduler = None
         self._lanes = {'positive': [Lane(i, self._speed, self._length, self)
                                     for i in range(self._channel)]}
         self._car_num = {'positive': 0}
@@ -35,11 +37,13 @@ class Road(object):
         @param global_tick: int
         """
         self._car_num['positive'] = 0
+        self._ready_exit_lane_index = {'positive': 0}
         for i in range(self._channel):
             self.lane_go_by_tick(global_tick, 'positive', i)
             self._car_num['positive'] += self._lanes['positive'][i].get_car_num()
         if self._is_duplex:
             self._car_num['negative'] = 0
+            self._ready_exit_lane_index['negative'] = 0
             for i in range(self._channel):
                 self.lane_go_by_tick(global_tick, 'negative', i)
                 self._car_num['negative'] += self._lanes['negative'][i].get_car_num()

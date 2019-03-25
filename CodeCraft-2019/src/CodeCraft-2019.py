@@ -4,6 +4,7 @@ import sys
 from utils.init_util import build_objects_from_files, build_path_from_answer, all_is_done
 from schedulers.GeneralScheduler import GeneralScheduler
 from schedulers.Scheduler import Scheduler
+from schedulers.RevertScheduler import RevertScheduler
 import time
 
 
@@ -33,24 +34,26 @@ def main():
         build_objects_from_files(car_path, road_path, cross_path)
 
     if MODE == 'scheduling':
-        scheduler = GeneralScheduler(id_2_cars, id_2_roads, id_2_cross)
+        scheduler = RevertScheduler(id_2_cars, id_2_roads, id_2_cross)
+        for i in id_2_roads:
+            id_2_roads[i].set_scheduler(scheduler)
+        scheduler.multi_scheduling()
     else:
         scheduler = Scheduler(id_2_cars, id_2_roads, id_2_cross)
         build_path_from_answer(id_2_cars, id_2_roads, answer_path)
+        for i in id_2_roads:
+            id_2_roads[i].set_scheduler(scheduler)
 
-    for i in id_2_roads:
-        id_2_roads[i].set_scheduler(scheduler)
-
-    global_tick = 1
-    start = time.time()
-    while not scheduler.is_all_arrived():
-        logging.info("current tick: %d" % global_tick)
-        scheduler.go_by_tick(global_tick)
-        assert all_is_done(id_2_roads)
-        scheduler.scheduling(global_tick)
-        global_tick += 1
-    end = time.time()
-    logging.info("all cars have arrived, total ticks: %d, total time %d s" % (global_tick - 1, end-start))
+        global_tick = 1
+        start = time.time()
+        while not scheduler.is_all_arrived():
+            logging.info("current tick: %d" % global_tick)
+            scheduler.go_by_tick(global_tick)
+            assert all_is_done(id_2_roads)
+            scheduler.scheduling(global_tick)
+            global_tick += 1
+        end = time.time()
+        logging.info("all cars have arrived, total ticks: %d, total time %d s" % (global_tick - 1, end-start))
 
     if MODE == 'scheduling':
         # to write output file

@@ -40,7 +40,7 @@ class GeneralScheduler(BaseScheduler):
             car_source = car.get_source()
             # 车辆出发点的四个道路中，都不那么拥塞就可以出发
             if all([road is None or not self._is_this_road_congestion(road, entrance=car_source) for road in car_source.get_road_list()]):
-                graph = EdgeWeightedDigraph(car, self._id_2_roads.values())
+                graph = EdgeWeightedDigraph(self._id_2_roads.values(), car)
                 path = self._plan_path(graph, car.get_source_id(), car.get_destination_id())
                 start_road, state_road_direction = path[0]
                 if not start_road.is_full(state_road_direction):

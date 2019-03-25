@@ -12,6 +12,10 @@ class Car(object):
         self._source = None
         self._destination = None
         self._current_road = None
+        self.clear()
+
+    def clear(self):
+        self._current_road = None
         self._current_direction = None
         self._current_position = None
         self._next_road = None

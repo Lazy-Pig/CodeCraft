@@ -12,6 +12,9 @@ class Cross(object):
         self.to_road = None
         self._has_updated = False
         self._done = False
+        self.clear()
+
+    def clear(self):
         self._ready_out_slot = {}
 
     def get_id(self):
