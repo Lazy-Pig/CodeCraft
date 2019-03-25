@@ -14,9 +14,7 @@ class Scheduler(BaseScheduler):
         for car_id in self._not_start_cars_ids:
             car = self._id_2_cars[car_id]
             if global_tick >= car.get_begin_tick():
-                if car._path == None:
-                    print()
-                first_raod, first_raod_direction = car._path[0]
+                first_raod, first_raod_direction = car.get_path()[0]
                 if all([l.is_full() for l in first_raod.get_lanes(first_raod_direction)]):
                     continue
                 cars_just_run.append(car)

@@ -84,6 +84,9 @@ class Car(object):
     def set_path(self, path):
         self._path = path
 
+    def get_path(self):
+        return self._path
+
     def get_next_road(self):
         """
         获取下一个road

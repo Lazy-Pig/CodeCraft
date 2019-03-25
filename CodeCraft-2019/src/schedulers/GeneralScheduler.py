@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from schedulers.BaseScheduler import BaseScheduler
 from algrithms.EdgeWeightedDigraph import EdgeWeightedDigraph
+from algrithms.DijkstraSP import DijkstraSP
 
 
 class GeneralScheduler(BaseScheduler):
@@ -61,3 +62,8 @@ class GeneralScheduler(BaseScheduler):
             return False
         return is_full or (car_num >= int(road.get_length() * road.get_channel_number() * self._congestion_ratio))
         # return is_full or (car_num >= road.get_channel_number())
+
+    def _plan_path(self, graph, source_id, destination_id):
+        shortest = DijkstraSP(graph, source_id)
+        path = shortest.path_to(destination_id)
+        return path

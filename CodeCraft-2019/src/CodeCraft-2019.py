@@ -45,23 +45,7 @@ def main():
     start = time.time()
     while not scheduler.is_all_arrived():
         logging.info("current tick: %d" % global_tick)
-        # 所有道路状态更新
-        for road_id in id_2_roads:
-            id_2_roads[road_id].go_by_tick(global_tick)
-        # 所有路口状态更新
-        unfinished_cross_ids = list(sorted(id_2_cross.keys()))
-        while len(unfinished_cross_ids) > 0:
-            dead = True
-            next_cross_ids = []
-            for cross_id in unfinished_cross_ids:
-                cross = id_2_cross[cross_id]
-                cross.go_by_tick(global_tick)
-                if not id_2_cross[cross_id].is_done():
-                    next_cross_ids.append(cross_id)
-                if cross.has_updated() or cross.is_done():
-                    dead = False
-            unfinished_cross_ids = next_cross_ids
-            assert dead is False, print("dead lock in", unfinished_cross_ids)
+        scheduler.go_by_tick(global_tick)
         assert all_is_done(id_2_roads)
         scheduler.scheduling(global_tick)
         global_tick += 1

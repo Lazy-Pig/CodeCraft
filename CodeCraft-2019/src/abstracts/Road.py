@@ -132,19 +132,28 @@ class Road(object):
     def exit(self, direction, lane_num):
         return self._lanes[direction][lane_num].exit()
 
-    def get_weight(self, car, direction):
+    # def get_weight(self, car, direction):
+    #     """
+    #     车通过道路需要用的时间作为图的权重
+    #     计算公式：（道路长度 / 行驶速度） × （1 + tan（道路车辆数与道路容量比 × pi/2）
+    #     1）当道路上没有车时，权重 = 道路长度 / 行驶速度
+    #     2）当道路堵满车时， 权重 = 无穷大
+    #
+    #     @param car: Car
+    #     @return float
+    #     """
+    #     v = min(car.get_speed(), self.get_speed())
+    #     ratio = self.get_saturation(direction)
+    #     return (self._length / v) * (1 + math.tan((math.pi * ratio) / 2))
+
+    def get_weight(self, car):
         """
         车通过道路需要用的时间作为图的权重
-        计算公式：（道路长度 / 行驶速度） × （1 + tan（道路车辆数与道路容量比 × pi/2）
-        1）当道路上没有车时，权重 = 道路长度 / 行驶速度
-        2）当道路堵满车时， 权重 = 无穷大
-
         @param car: Car
-        @return float
+        @return int
         """
         v = min(car.get_speed(), self.get_speed())
-        ratio = self.get_saturation(direction)
-        return (self._length / v) * (1 + math.tan((math.pi * ratio) / 2))
+        return math.ceil(self.get_length() / v)
 
     def get_saturation(self, direction):
         return self.get_car_num(direction) / (self._length * self._channel)

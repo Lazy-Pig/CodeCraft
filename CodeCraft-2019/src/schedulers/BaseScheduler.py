@@ -1,4 +1,4 @@
-from algrithms.DijkstraSP import DijkstraSP
+import logging
 
 
 class BaseScheduler(object):
@@ -9,6 +9,8 @@ class BaseScheduler(object):
         self._not_start_cars_ids = sorted(id_2_cars.keys())
         self._running_cars = []
         self._arrived_cars = []
+        self._dead = False
+        self._unfinished_cross_ids = []
 
     def is_all_arrived(self):
         return len(self._arrived_cars) == len(self._id_2_cars)
@@ -16,11 +18,29 @@ class BaseScheduler(object):
     def scheduling(self, global_tick):
         raise NotImplementedError
 
-    def _plan_path(self, graph, source_id, destination_id):
-        shortest = DijkstraSP(graph, source_id)
-        path = shortest.path_to(destination_id)
-        return path
-
     def arrived(self, car):
         self._arrived_cars.append(car.get_id())
         self._running_cars.remove(car.get_id())
+
+    def go_by_tick(self, global_tick):
+        # 所有道路状态更新
+        for road_id in self._id_2_roads:
+            self._id_2_roads[road_id].go_by_tick(global_tick)
+        # 所有路口状态更新
+        self._unfinished_cross_ids = list(sorted(self._id_2_cross.keys()))
+        while len(self._unfinished_cross_ids) > 0:
+            self._dead = True
+            next_cross_ids = []
+            for cross_id in self._unfinished_cross_ids:
+                cross = self._id_2_cross[cross_id]
+                cross.go_by_tick(global_tick)
+                if not self._id_2_cross[cross_id].is_done():
+                    next_cross_ids.append(cross_id)
+                if cross.has_updated() or cross.is_done():
+                    self._dead = False
+            self._unfinished_cross_ids = next_cross_ids
+            if self._dead:
+                self.dead_lock_handler()
+
+    def dead_lock_handler(self):
+        logging.warning("dead lock in %s" % ",".join([str(id) for id in self._unfinished_cross_ids]))
