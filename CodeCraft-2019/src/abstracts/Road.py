@@ -150,14 +150,20 @@ class Road(object):
     #     ratio = self.get_saturation(direction)
     #     return (self._length / v) * (1 + math.tan((math.pi * ratio) / 2))
 
-    def get_weight(self, car):
+    # def get_weight(self, car):
+    #     """
+    #     车通过道路需要用的时间作为图的权重
+    #     @param car: Car
+    #     @return int
+    #     """
+    #     v = min(car.get_speed(), self.get_speed())
+    #     return math.ceil(self.get_length() / v)
+    def get_weight(self):
         """
         车通过道路需要用的时间作为图的权重
-        @param car: Car
         @return int
         """
-        v = min(car.get_speed(), self.get_speed())
-        return math.ceil(self.get_length() / v)
+        return self._length
 
     def get_saturation(self, direction):
         return self.get_car_num(direction) / (self._length * self._channel)

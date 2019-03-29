@@ -23,7 +23,8 @@ class EdgeWeightedDigraph(object):
                 self.adj[road.get_source_id()].append((road, direction, math.inf))
             else:
                 # self.adj[road.get_source_id()].append((road, direction, road.get_weight(self._car, direction)))
-                self.adj[road.get_source_id()].append((road, direction, road.get_weight(self._car)))
+                # self.adj[road.get_source_id()].append((road, direction, road.get_weight(self._car)))
+                self.adj[road.get_source_id()].append((road, direction, road.get_weight()))
         else:
             if road.get_destination_id() not in self.adj:
                 self.adj[road.get_destination_id()] = []
@@ -31,7 +32,8 @@ class EdgeWeightedDigraph(object):
                 self.adj[road.get_source_id()].append((road, direction, math.inf))
             else:
                 # self.adj[road.get_destination_id()].append((road, direction, road.get_weight(self._car, direction)))
-                self.adj[road.get_destination_id()].append((road, direction, road.get_weight(self._car)))
+                # self.adj[road.get_destination_id()].append((road, direction, road.get_weight(self._car)))
+                self.adj[road.get_destination_id()].append((road, direction, road.get_weight()))
 
     def get_cross_num(self):
         return self._cross_num

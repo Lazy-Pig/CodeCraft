@@ -88,8 +88,10 @@ class Car(object):
 
     def set_path(self, path):
         self._path = path
+        total_length = 0
         for r, d in path:
-            self._total_time += r.get_weight(self)
+            total_length += r.get_weight()
+        self._total_time = total_length // self._speed
 
     def get_path(self):
         return self._path
