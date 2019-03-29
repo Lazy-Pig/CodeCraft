@@ -15,6 +15,9 @@ class Road(object):
         self._is_duplex = is_duplex
         self._source = None
         self._destination = None
+        self._capacity = self._length * self._channel
+        if self._is_duplex:
+            self._capacity *= 2
         self.clear()
 
     def clear(self):
@@ -173,3 +176,6 @@ class Road(object):
 
     def get_scheduler(self):
         return self._scheduler
+
+    def get_capacity(self):
+        return self._capacity

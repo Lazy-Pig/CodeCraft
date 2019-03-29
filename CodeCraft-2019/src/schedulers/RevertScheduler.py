@@ -4,15 +4,19 @@ from algrithms.DijkstraSP import DijkstraSP
 import time
 import logging
 from collections import defaultdict
+import math
 
 
 class RevertScheduler(BaseScheduler):
-    def __init__(self, id_2_cars, id_2_roads, id_2_cross, init_saturation=0.6, first_road_saturation=1.0, satisfied_num=3):
+    def __init__(self, id_2_cars, id_2_roads, id_2_cross,
+                 init_saturation=0.5, first_road_saturation=1.0, satisfied_num=20, car_num_ratio=0.06):
         super(RevertScheduler, self).__init__(id_2_cars, id_2_roads, id_2_cross)
         self._init_saturation = init_saturation
         self._first_road_saturation = first_road_saturation
         self._satisfied_num = satisfied_num
+        self._car_num_ratio = car_num_ratio
         self._saturation = init_saturation
+        self._map_capacity = sum([self._id_2_roads[road_id].get_capacity() for road_id in self._id_2_roads])
         roads = self._id_2_roads.values()
         self._car_id_2_path = {}
         car_group = defaultdict(list)
@@ -39,7 +43,8 @@ class RevertScheduler(BaseScheduler):
         # 找出能够开始出发的车辆
         cars_just_run = []
         for car_id in self._not_start_cars_ids:
-            if len(self._running_cars) > len(self._id_2_cars) // 25:
+            if len(self._running_cars) > math.ceil(self._map_capacity * self._car_num_ratio):
+            # if len(self._running_cars) > len(self._id_2_cars) * self._car_num_ratio:
                 break
 
             car = self._id_2_cars[car_id]
@@ -53,6 +58,11 @@ class RevertScheduler(BaseScheduler):
             if len(self._running_cars) < len(self._id_2_cars) // 100:
                 can_start = True
             else:
+                # flags = []
+                # for r, d in car.get_path():
+                #     if len(flags) >= self._satisfied_num:
+                #         break
+                #     flags.append(r.get_saturation(d) < self._saturation)
                 can_start = all([r.get_saturation(d) < self._saturation for r, d in car.get_path()])
 
             if can_start:
