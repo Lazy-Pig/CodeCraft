@@ -5,7 +5,6 @@ from utils.init_util import build_objects_from_files, build_path_from_answer, al
 from schedulers.GeneralScheduler import GeneralScheduler
 from schedulers.Scheduler import Scheduler
 from schedulers.RevertScheduler import RevertScheduler
-import time
 
 
 MODE = 'scheduling'
