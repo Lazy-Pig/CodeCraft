@@ -37,7 +37,7 @@ class DijkstraSP(object):
 
     def path_to(self, v):
         if not self.has_path_to(v):
-            return None
+            raise Exception("没有找到路径：%d -> %d" % (self._source_id, v))
 
         path = []
         while True:
