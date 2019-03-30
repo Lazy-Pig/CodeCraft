@@ -9,7 +9,7 @@ import math
 
 class RevertScheduler(BaseScheduler):
     def __init__(self, id_2_cars, id_2_roads, id_2_cross,
-                 init_saturation=0.5, first_road_saturation=1.0, satisfied_num=20, car_num_ratio=0.06):
+                 init_saturation=0.5, first_road_saturation=1.0, satisfied_num=20, car_num_ratio=0.04):
         super(RevertScheduler, self).__init__(id_2_cars, id_2_roads, id_2_cross)
         self._init_saturation = init_saturation
         self._first_road_saturation = first_road_saturation
@@ -28,7 +28,10 @@ class RevertScheduler(BaseScheduler):
             g = EdgeWeightedDigraph(roads)
             shortest = DijkstraSP(g, source_id)
             for car in car_group[source_id]:
-                path = shortest.path_to(car.get_destination_id())
+                if shortest.has_path_to(car.get_destination_id()):
+                    path = shortest.path_to(car.get_destination_id())
+                else:
+                    path = shortest.bfs(car.get_destination_id())
                 car.set_path(path)
                 self._car_id_2_path[car.get_id()] = path[:]
         e_t = time.time()
