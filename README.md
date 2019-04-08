@@ -1,18 +1,18 @@
 # CodeCraft
 CodeCraft2019初赛题目
 
-## 判题器
+## 判题器（模拟器）
 判题器写的没有poi大神写得好，主要的差异是我的有些死锁情况判不出来（不清楚原因...）
 
 ### 图形化界面（game模块）
 
-![image](https://github.com/Lazy-Pig/CodeCraft/blob/master/%E5%88%A4%E9%A2%98%E5%99%A8%E5%9B%BE%E5%BD%A2%E5%8C%96%E7%A4%BA%E4%BE%8B.gif)
-
-有图形化界面，主要是src中的game模块，基于pygame框架写的，图形化界面的具体特点：
-- 只能显示某个指定路口的详细路况，即每个tick每个车道上行驶的车辆的id号
+图形化模块是基于pygame框架写的，主要是src中的game模块，图形化界面的具体特点：
+- 只能显示某一个指定路口的详细路况，即每个tick每个车道上行驶的车辆的id号
 - 固定显示每个road的3个车道（默认每个路口都是双向，正反各3个车道）
 - 固定显示每个车道的10个槽位
 - 这些限制只是为了方便图形化显示的限制，判题器的运行更新逻辑没有这样的限制的
+
+![image](https://github.com/Lazy-Pig/CodeCraft/blob/master/%E5%88%A4%E9%A2%98%E5%99%A8%E5%9B%BE%E5%BD%A2%E5%8C%96%E7%A4%BA%E4%BE%8B.gif)
 
 ### 判题器逻辑（abstracts模块）
 - Car维护车辆要行驶的路径，实现车切换到下一个road
@@ -24,7 +24,7 @@ CodeCraft2019初赛题目
 调度器分为路径规划和车辆出发调度两个部分，调度器初始化的时候会为每辆车进行路径规划，规划完成后路径固定不再更改。每个tick调度器只进行车辆出发调度。
 
 ### 路径规划（algrithms模块）
-- 先见地图视为强连通图，利用Dijistra规划最短路径（road的权重就是length）
+- 先将地图视为强连通图，利用Dijistra规划最短路径（road的权重就是length）
 - 若有车的src到dest不存在最短路径，则利用广度优先搜索，从dest开始向前搜索，直至找到一个节点存在src到该节点的Dijistra最短路径为止，将Dijistra路径和广搜得到的路径拼接成src到dest的路径
 
 ### 车辆出发调度（schedulers模块）
