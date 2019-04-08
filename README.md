@@ -6,8 +6,7 @@ CodeCraft2019初赛题目
 
 ### 图形化界面（game模块）
 
-![image]
-(https://github.com/Lazy-Pig/CodeCraft/blob/master/%E5%88%A4%E9%A2%98%E5%99%A8%E5%9B%BE%E5%BD%A2%E5%8C%96%E7%A4%BA%E4%BE%8B.gif)
+![image](https://github.com/Lazy-Pig/CodeCraft/blob/master/%E5%88%A4%E9%A2%98%E5%99%A8%E5%9B%BE%E5%BD%A2%E5%8C%96%E7%A4%BA%E4%BE%8B.gif)
 
 有图形化界面，主要是src中的game模块，基于pygame框架写的，判题器的具体特点：
 - 只能显示某个指定路口的详细路况，即每个tick每个车道上行驶的车辆的id号
